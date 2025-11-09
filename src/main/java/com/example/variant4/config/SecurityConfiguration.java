@@ -65,9 +65,9 @@ class SecurityConfiguration {
     @Bean
     public CommandLineRunner createTestUsers() {
         return args -> {
-            if (userService.findByEmail("admin@example.com").isEmpty()) {
+            if (userService.findByEmail("").isEmpty()) {
                 userService.save(User.builder()
-                        .email("admin@example.com")
+                        .email("nozhora510@gmail.com")
                         .password(passwordEncoder().encode("admin"))
                         .build());
             }

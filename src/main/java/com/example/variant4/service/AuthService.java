@@ -6,7 +6,6 @@ import com.example.variant4.model.AuthResponse;
 import com.example.variant4.model.RefreshTokenRequest;
 import com.example.variant4.model.User;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,6 @@ public class AuthService {
     UserService userService;
     JwtService jwtService;
     AuthenticationManager authenticationManager;
-    TokenService tokenService;
     JwtProperties properties;
     EmailService emailService;
     PasswordEncoder passwordEncoder;
@@ -38,8 +36,6 @@ public class AuthService {
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-
-        tokenService.saveRefreshToken(refreshToken, user.getUsername());
 
         emailService.send(
                 user.getUsername(),
@@ -69,11 +65,8 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-
         String refreshToken = jwtService.generateRefreshToken(user);
         String accessToken = jwtService.generateAccessToken(user);
-
-        tokenService.saveRefreshToken(refreshToken, user.getUsername());
 
         emailService.send(
                 user.getUsername(),
@@ -86,21 +79,21 @@ public class AuthService {
 
     public AuthResponse refresh(RefreshTokenRequest request) {
         var token = request.getRefreshToken();
-        if (!tokenService.isRefreshTokenValid(token)) {
+        if (!jwtService.isRefreshToken(token)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
         }
 
 
-        String email = tokenService.getEmailFromRefreshToken(token)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email not found"));
+        String email = jwtService.extractUsername(token);
+
+        if(email.isBlank()){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
+        }
 
         var user = userService.loadUserByUsername(email);
 
         String newAccessToken = jwtService.generateAccessToken(user);
         String newRefreshToken = jwtService.generateRefreshToken(user);
-
-        tokenService.deleteRefreshToken(token);
-        tokenService.saveRefreshToken(newRefreshToken, email);
 
         emailService.send(
                 email,
