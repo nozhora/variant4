@@ -44,10 +44,10 @@ jobs:
           docker build -t my-spring-app .
           docker run -d --name test-app -p 8080:8080 my-spring-app
 
-#      - name: Build on test
-#        if: success()
-#        run: |
-#          curl -X POST ${{ secrets.RENDER_HOOK_DEV }}
+      - name: Build on test
+        if: success()
+        run: |
+          curl -X POST ${{ secrets.DEV }}
 
   integration-tests:
     needs: stage
@@ -75,3 +75,11 @@ jobs:
       - name: Run INTEGRATION tests
         run: ./mvnw test -Dtest=IntegrationTest
 
+  deploy:
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build on test
+        if: success()
+        run: |
+          curl -X POST ${{ secrets.PROD }}
