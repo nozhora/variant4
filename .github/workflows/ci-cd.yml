@@ -50,7 +50,7 @@ jobs:
 #          curl -X POST ${{ secrets.RENDER_HOOK_DEV }}
 
   integration-tests:
-    needs: unit-tests
+    needs: stage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
