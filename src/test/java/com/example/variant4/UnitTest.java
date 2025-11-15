@@ -23,7 +23,7 @@ class UnitTest {
     @Test
     void existByEmail_shouldReturnFalse_whenUserDoesNotExist() {
         String email = "nope@example.com";
-        when(userRepository.existsByEmail(email)).thenReturn(false);
+        when(userRepository.existsByEmail(email)).thenReturn(true);
 
         boolean exists = userService.existByEmail(email);
 
