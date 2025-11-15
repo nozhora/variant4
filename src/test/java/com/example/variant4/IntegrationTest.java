@@ -27,7 +27,7 @@ class IntegrationTest {
         AuthRequest request = new AuthRequest("test@example.com", "password123");
 
         ResponseEntity<AuthResponse> response = restTemplate.postForEntity(
-                "/api/auth/register", request, AuthResponse.class
+                "/api/auth", request, AuthResponse.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

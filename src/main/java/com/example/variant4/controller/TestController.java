@@ -15,6 +15,6 @@ class TestController {
 
     @GetMapping("/not-protected")
     public String notProtectedRoute(){
-        return "not protected";
+        return "not protected drtfyguhjikol";
     }
 }
